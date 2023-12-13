@@ -1,0 +1,145 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <script>
+    $(document).ready(function(){
+        $("#action-container").hide();
+        $("#title-link").on('click',function(){
+            alert("Alert");
+
+        });
+
+        setInterval(function(){
+            updateCars();
+
+        },1000);
+      
+        function updateCars(){
+               $.ajax({
+            url: 'display_cars.php',
+            type: 'POST',
+            success:function(show_cars){
+                if(!show_cars.error){
+                    $('#show-cars').html(show_cars);
+                }
+
+            }
+        });
+        }
+     
+
+
+
+        $('#search').keyup(function(){
+            var search = $('#search').val();
+          $.ajax({
+            url:'search.php',
+            data:{search:search},
+            type: 'POST',
+            success:function(data){
+                if(!data.error){
+                    $('#result').html(data);
+                }
+
+            }
+
+
+          });
+
+        });
+        //add cars to db
+        $("#add-car-form").submit(function(event){
+         event.preventDefault();
+         //take all data from form
+         var postData = $(this).serialize();
+         var url = $(this).attr('action');
+
+         $.post(url,postData, function(php_table_data){
+
+            $("#car-result").html(php_table_data);
+            $("#add-car-form")[0].reset();
+
+         });
+        
+
+        });//Add car code
+
+      
+
+
+
+      
+         
+    });//document ready
+
+  </script>
+  
+  <div id="container" class="col-xs-6 col-xs-offset-3">
+    <h1>Search Our Database</h1>
+    <div class="mb-3">
+   <input class="form-control"  type="text" name="search" id="search" placeholder="Search our inventory">
+ </div>
+ <br>
+ <br>
+ <h2 class="bg-success" id="result"></h2>
+ <div class="row">
+    <form id="add-car-form" class="col-x-6" method="POST" action="add_cars.php">
+        <div class="form-group">
+             <input type="text" name="car_name" class="form-control" required> 
+        </div>
+        <br>
+      <div class="form-group">
+         <input type="submit" class="btn btn-primary" value="Add car">
+         <input type="reset" class="btn btn-secondary" value="Clear">
+      </div>
+       
+    </form>
+
+    <div class="col-xs-6">
+        <p id="feedback" class="bg-success"></p>
+        <div id="action-container">
+    
+        </div>
+    
+    </div>
+
+    <div class="row">
+        <div class="col-xs-6">
+            <table class="table">
+
+                <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>Name</th>
+                    </tr>
+                </thead>
+                <tbody id="show-cars">
+
+                </tbody>
+            </table>
+          
+
+        </div>
+        
+
+    </div>
+    
+    <div class="col-xs-6">
+        <div id="car-result"></div>
+    </div>
+
+ </div>
+
+</div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
+</body>
+</html>
